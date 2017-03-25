@@ -12,11 +12,23 @@ use Core\User\Exceptions\MismatchRepeatPasswordException;
 use Core\User\User;
 use Core\User\UserRepository;
 
-class UserManager
+use Core\Manager\Manager;
+use Core\Manager\ManagerEntityContract;
+
+class UserManager extends Manager
 {
 
+	/**
+	 * Entity class
+	 *
+	 * @var string
+	 */
+	protected $entity = User::class;
+
     /**
-     * @var Repository
+	 * Repository
+	 *
+     * @var UserRepository
      */
     protected $repository;
 
@@ -36,6 +48,22 @@ class UserManager
     public function getRepository()
     {
         return $this->repository;
+    }
+
+	/**
+     * Throw an exception if a parameter is null
+     *
+     * @param array $params
+     *
+     * @return void
+     */
+    public function throwExceptionParamsNull($params)
+    {
+        foreach($params as $param) {
+            if($param == null) {
+                throw new MissingParamException("Missing parameter: {$param}");
+            }
+        }
     }
 
     /**
@@ -58,13 +86,13 @@ class UserManager
     /**
      * Throw an exception if email already exists
      *
-     * @param string $username
+     * @param string $email
      *
      * @return void
      */
-    public function throwExceptionEmailAlreadyUsed($username)
+    public function throwExceptionEmailAlreadyUsed(ManagerEntityContract $entity, $email)
     {
-        if($this->getRepository()->findByEmail($username))
+        if($this->getRepository()->uniqueByEmail($entity, $email))
             throw new EmailAlreadyUsedException();
     }
 
@@ -75,9 +103,9 @@ class UserManager
      *
      * @return void
      */
-    public function throwExceptionUsernameAlreadyUsed($username)
+    public function throwExceptionUsernameAlreadyUsed(ManagerEntityContract $entity, $username)
     {
-        if($this->getRepository()->findByUsername($username))
+        if($this->getRepository()->uniqueByUsername($entity, $username))
             throw new UsernameAlreadyUsedException();
     }
 
@@ -121,29 +149,70 @@ class UserManager
             throw new MismatchRepeatPasswordException();
     }
 
-    /**
-     * Create a new user
-     *
-     * @param array $params
-     *
-     * @return User
-     */
-    public function create($params)
-    {
-        
-        $this->throwExceptionMissingParam(['username', 'password', 'password_repeat', 'email'], $params);
-        $this->throwExceptionUsernameAlreadyUsed($params['username']);
-        $this->throwExceptionEmailAlreadyUsed($params['email']);
-        $this->throwExceptionEmailInvalid($params['email']);
-        $this->throwExceptionPasswordTooWeak($params['password']);
-        $this->throwExceptionMismatchRepeatPassword($params['password'], $params['password_repeat']);
- 
-        $user = new User();
-        $user->name=$params['username'];
-        $params['password'] = bcrypt($params['password']);
-        $user->fill($params);
-        $user->save();
+	/**
+	 * Fill the entity
+	 *
+	 * @param ManagerEntityContract $entity
+	 * @param array $params
+	 *
+	 * @return ManagerEntityContract
+	 */
+	public function fill(ManagerEntityContract $user, array $params)
+	{
+		// $this->throwExceptionMissingParam(['username', 'password', 'password_repeat', 'email'], $params);
 
-        return $user;
-    }
+		if (isset($params['username'])) {
+			$this->throwExceptionUsernameAlreadyUsed($user, $params['username']);
+		}
+
+		if (isset($params['email'])) {
+			$this->throwExceptionEmailAlreadyUsed($user, $params['email']);
+			$this->throwExceptionEmailInvalid($params['email']);
+		}
+
+		if (isset($params['password']) && isset($params['password_repeat'])) {
+			$this->throwExceptionMismatchRepeatPassword($params['password'], $params['password_repeat']);
+		}
+
+		if (isset($params['password'])) {
+			$this->throwExceptionPasswordTooWeak($params['password']);
+			$params['password'] = bcrypt($params['password']);
+		}
+
+		$user->fill($params);
+
+		// Temporary ?
+		if (isset($params['username'])) {
+			$user->name=$user->username;
+		}
+
+		return $user;
+
+	}
+
+	/**
+	 * This will prevent from saving entity with null value
+	 *
+	 * @param ManagerEntityContract $entity
+	 *
+	 * @return ManagerEntityContract
+	 */
+	public function save(ManagerEntityContract $entity)
+	{
+		$this->throwExceptionParamsNull([$entity->username, $entity->password, $entity->email]);
+
+		return parent::save($entity);
+	}
+
+	/**
+	 * To array
+	 *
+	 * @param Core\Manager\ManagerEntityContract $entity
+	 *
+	 * @return array
+	 */
+	public function toArray(ManagerEntityContract $entity)
+	{
+		return [];
+	}
 }
