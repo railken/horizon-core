@@ -1,10 +1,10 @@
-# Horizon: Core
+# Horizon: Auth
 
-This is the core of Horizon.
+This is the auth service of Horizon.
 
-Horizon is a multi-service web project and this is the core.
+Horizon is a multi-service web project.
 
-The core will provide OAuth2 authentication for all services connected with it.
+This repository provides OAuth2 authentication for all services connected with it.
 
 What kind of service is providing Horizon? (What's Today, Music Player)
 
