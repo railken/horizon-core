@@ -30,13 +30,13 @@ $ composer install
 POST /api/v1/sign-in
 ```
 
-### Parameters
+#### Parameters
 | Name     | Value         |
 |:---------|:--------------|
 | username | Your username |
 | password | Your password |
 
-### Response
+#### Response
 
 ```json
 {
@@ -52,17 +52,154 @@ POST /api/v1/sign-in
 
 
 
-## [WIP] CRUD User 
+## CRUD User 
 
 If your account is an administrator you can easily manipulate all user's credential
 
-## 
+## Retrieve all users
 ```
-GET /api/v1/users
+GET /api/v1/admin/users
 ```
 
-### Parameters
+#### Parameters
 | Name     | Value         |
 |:---------|:--------------|
-| username | Your username |
-| password | Your password |
+| page     | Current page of listing |
+| show     | Number of maximum records to retrieve |
+| search   | Basic array search, the key correspond to the name field |
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "ok",
+  "data": {
+    "resources": [
+      {
+        "id": 1,
+        "name": "admin",
+        "email": "admin@admin.com",
+        "created_at": "2017-03-25 22:53:59",
+        "updated_at": "2017-03-25 22:53:59",
+        "username": "admin",
+        "role": "admin"
+      }
+    ],
+    "pagination": {
+      "query": {},
+      "page": 1,
+      "take": "1",
+      "show": "1",
+      "total": 1,
+      "max_results": "1",
+      "first_result": 0,
+      "from": 0,
+      "to": 1,
+      "pages": 1
+    },
+    "sort": {
+      "field": "id",
+      "direction": "desc"
+    },
+    "search": []
+  }
+}
+```
+
+
+## Add a user
+```
+POST /api/v1/admin/users
+```
+
+#### Parameters
+| Name     | Value         |
+|:---------|:--------------|
+| username | Username (Unique) |
+| email    | Email (Unique) |
+| password | Password |
+| role 	   | Role (admin or user) |
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "ok",
+  "data": {
+    "resource": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@admin.com"
+    }
+  }
+}
+```
+
+## Edit a user
+```
+PUT /api/v1/admin/users/1
+```
+
+#### Parameters
+| Name     | Value         |
+|:---------|:--------------|
+| username | Username (Unique) |
+| email    | Email (Unique) |
+| password | Password |
+| role 	   | Role (admin or user) |
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "ok",
+  "data": {
+    "resource": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@admin.com"
+    }
+  }
+}
+```
+
+### Show a user
+```
+GET /api/v1/admin/users/1
+```
+
+#### Response
+
+```json
+{
+  "status": "success",
+  "message": "ok",
+  "data": {
+    "resource": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@admin.com"
+    }
+  }
+}
+```
+
+## Delete users
+
+You can delete multiple resource at once
+```
+DELETE /api/v1/admin/users/1;2
+```
+
+### Response
+
+```json
+{
+  "status": "success",
+  "message": "ok"
+}
+```
+
