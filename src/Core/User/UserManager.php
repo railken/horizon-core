@@ -14,18 +14,11 @@ use Core\Manager\Exceptions\InvalidValueParamException;
 use Core\User\User;
 use Core\User\UserRepository;
 
-use Core\Manager\Manager;
-use Core\Manager\ManagerEntityContract;
+use Railken\Laravel\Manager\ModelManager;
+use Railken\Laravel\Manager\ModelContract;
 
-class UserManager extends Manager
+class UserManager extends ModelManager
 {
-
-	/**
-	 * Entity class
-	 *
-	 * @var string
-	 */
-	protected $entity = User::class;
 
     /**
 	 * Repository
@@ -92,7 +85,7 @@ class UserManager extends Manager
      *
      * @return void
      */
-    public function throwExceptionEmailAlreadyUsed(ManagerEntityContract $entity, $email)
+    public function throwExceptionEmailAlreadyUsed(ModelContract $entity, $email)
     {
         if($this->getRepository()->uniqueByEmail($entity, $email))
             throw new EmailAlreadyUsedException();
@@ -105,7 +98,7 @@ class UserManager extends Manager
      *
      * @return void
      */
-    public function throwExceptionUsernameAlreadyUsed(ManagerEntityContract $entity, $username)
+    public function throwExceptionUsernameAlreadyUsed(ModelContract $entity, $username)
     {
         if($this->getRepository()->uniqueByUsername($entity, $username))
             throw new UsernameAlreadyUsedException();
@@ -154,12 +147,12 @@ class UserManager extends Manager
 	/**
 	 * Fill the entity
 	 *
-	 * @param ManagerEntityContract $entity
+	 * @param ModelContract $entity
 	 * @param array $params
 	 *
-	 * @return ManagerEntityContract
+	 * @return ModelContract
 	 */
-	public function fill(ManagerEntityContract $user, array $params)
+	public function fill(ModelContract $user, array $params)
 	{
 
 		$params = array_intersect_key($params, array_flip(['username', 'email', 'password', 'password_repeat', 'role']));
@@ -205,11 +198,11 @@ class UserManager extends Manager
 	/**
 	 * This will prevent from saving entity with null value
 	 *
-	 * @param ManagerEntityContract $entity
+	 * @param ModelContract $entity
 	 *
-	 * @return ManagerEntityContract
+	 * @return ModelContract
 	 */
-	public function save(ManagerEntityContract $entity)
+	public function save(ModelContract $entity)
 	{
 		$this->throwExceptionParamsNull([
 			'username' => $entity->username,
@@ -224,11 +217,11 @@ class UserManager extends Manager
 	/**
 	 * To array
 	 *
-	 * @param Core\Manager\ManagerEntityContract $entity
+	 * @param Core\Manager\ModelContract $entity
 	 *
 	 * @return array
 	 */
-	public function toArray(ManagerEntityContract $entity)
+	public function toArray(ModelContract $entity)
 	{
 		return [];
 	}

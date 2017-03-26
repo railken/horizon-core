@@ -4,8 +4,18 @@ namespace Core\User;
 
 use Core\User\User;
 
-class UserRepository
+use Railken\Laravel\Manager\ModelRepository;
+
+class UserRepository extends ModelRepository
 {
+
+	/**
+	 * Entity
+	 *
+	 * @var string
+	 */
+	public $entity = User::class;
+
 	/**
 	 * Find an user given email
 	 *
@@ -54,44 +64,4 @@ class UserRepository
 		return $this->getQuery()->whereUsername($username)->first();
 	}
 
-	/**
-	 * Find by primary
-	 *
-	 * @param integer $id
-	 *
-	 * @return User
-	 */
-	public function find($id)
-	{
-		return User::where('id',$id)->first();
-	}
-
-	/**
-	 * Find where in
-	 *
-	 * @param array
-	 *
-	 * @return Collection
-	 */
-	public function findWhereIn($params)
-	{
-		$q = $this->getQuery();
-
-		foreach ($params as $name => $value) {
-			$q->whereIn($name, $value);
-		}
-
-		return $q->get();
-	}
-
-	/**
-	 * Return query
-	 *
-	 * @return QueryBuilder
-	 */
-	public function getQuery()
-	{
-		$user = new User();
-		return $user->newQuery();
-	}
 }
