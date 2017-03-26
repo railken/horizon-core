@@ -40,10 +40,14 @@ class SignInController extends Controller
     		return $this->error([]);
     	}
 
-        $body = json_decode($response->getBody());
+    	$body = json_decode($response->getBody());
 
-        if (isset($body->access_token))
-            return $this->success(['data' => $body]);
+        if (isset($body->access_token)) {
+			return $this->success(['data' => [
+				'resource' => $body,
+				'user' => null,
+			]]);
+		}
 
         return $this->error(['message' => $body->error]);
 
