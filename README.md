@@ -66,7 +66,7 @@ GET /api/v1/admin/users
 |:---------|:--------------|
 | page     | Current page of listing |
 | show     | Number of maximum records to retrieve |
-| search   | Basic array search, the key correspond to the name field |
+| search   | Basic array search, the key corresponds to the name field |
 
 #### Response
 
