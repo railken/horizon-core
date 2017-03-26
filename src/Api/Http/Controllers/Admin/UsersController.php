@@ -14,13 +14,23 @@ class UsersController extends Controller
 {
 
 	/**
+	 * Construct
+	 *
+	 * @param UserManager $manager
+	 */
+	public function __construct(UserManager $manager)
+	{
+		$this->manager = $manager;
+	}
+
+	/**
 	 * Return a new instance of Manager
 	 *
-	 *
+	 * @return UserManager
 	 */
 	public function getManager()
 	{
-		return new UserManager();
+		return $this->manager;
 	}
 
 	/**

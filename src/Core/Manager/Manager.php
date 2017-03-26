@@ -3,8 +3,7 @@
 namespace Core\Manager;
 
 use Core\Manager\ManagerEntityContract;
-
-use Exception;
+use Core\Manager\Exceptions\InvalidParamValueException;
 
 
 abstract class Manager
@@ -149,5 +148,23 @@ abstract class Manager
 	 {
 		 $entity->save();
 	 }
+
+
+     /**
+      * Throw an exception if a value is invalid
+      *
+      * @param string $name
+ 	  * @param string $value
+ 	  * @param mixed $accepted
+      *
+      * @return void
+      */
+     public function throwExceptionInvalidParamValue($name, $value, $accepted)
+     {
+         if (is_array($accepted)) {
+ 			if (!in_array($value, $accepted))
+ 	            throw new InvalidParamValueException("Invalid value {$value} for param {$name}. Accepted: ".implode($accepted, ","));
+ 		}
+     }
 
 }

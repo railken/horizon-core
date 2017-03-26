@@ -22,7 +22,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 			Route::post('/', ['uses' => 'UsersController@create'] );
 			Route::get('/{id}', ['uses' => 'UsersController@show'] );
 			Route::put('/{id}', ['uses' => 'UsersController@update'] );
-			Route::delete('/{od}', ['uses' => 'UsersController@delete'] );
+			Route::delete('/{ids}', ['uses' => 'UsersController@delete'] );
 		} );
 	} );
 

@@ -9,6 +9,8 @@ use Core\User\Exceptions\EmailInvalidException;
 use Core\User\Exceptions\WeakPasswordException;
 use Core\User\Exceptions\MismatchRepeatPasswordException;
 
+use Core\Manager\Exceptions\InvalidValueParamException;
+
 use Core\User\User;
 use Core\User\UserRepository;
 
@@ -59,9 +61,9 @@ class UserManager extends Manager
      */
     public function throwExceptionParamsNull($params)
     {
-        foreach($params as $param) {
-            if($param == null) {
-                throw new MissingParamException("Missing parameter: {$param}");
+        foreach($params as $name => $value) {
+            if($value == null) {
+                throw new MissingParamException("Missing parameter: {$name}");
             }
         }
     }
@@ -159,6 +161,10 @@ class UserManager extends Manager
 	 */
 	public function fill(ManagerEntityContract $user, array $params)
 	{
+
+		$params = array_intersect_key($params, array_flip(['username', 'email', 'password', 'password_repeat', 'role']));
+
+
 		// $this->throwExceptionMissingParam(['username', 'password', 'password_repeat', 'email'], $params);
 
 		if (isset($params['username'])) {
@@ -178,6 +184,12 @@ class UserManager extends Manager
 			$this->throwExceptionPasswordTooWeak($params['password']);
 			$params['password'] = bcrypt($params['password']);
 		}
+
+		if (isset($params['role'])) {
+			$this->throwExceptionInvalidParamValue('role', $params['role'], ['user', 'admin']);
+		}
+
+
 
 		$user->fill($params);
 
@@ -199,7 +211,12 @@ class UserManager extends Manager
 	 */
 	public function save(ManagerEntityContract $entity)
 	{
-		$this->throwExceptionParamsNull([$entity->username, $entity->password, $entity->email]);
+		$this->throwExceptionParamsNull([
+			'username' => $entity->username,
+			'password' => $entity->password,
+			'email' => $entity->email,
+			'role' => $entity->role
+		]);
 
 		return parent::save($entity);
 	}
