@@ -85,8 +85,8 @@ class UsersController extends Controller
 			->get();
 
 
-		foreach ($results as &$k) {
-			$k = $this->serialize($k);
+		foreach ($results as $n => $k) {
+			$results[$n] = $this->serialize($k);
 		}
 
 		return $this->success([
